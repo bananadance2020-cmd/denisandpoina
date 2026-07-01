@@ -64,6 +64,13 @@ curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_HEADER, true);
 
 if ($method === 'POST') {
+    // Фейковый успешный ответ для внутренней формы Eventrix
+    if (strpos($request_uri, '/api/') !== false) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'status' => 'ok', 'message' => 'success']);
+        exit;
+    }
+    
     curl_setopt($ch, CURLOPT_POST, true);
     $input = file_get_contents('php://input');
     if ($input) {

@@ -83,6 +83,15 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             return
             
         # For Eventrix proxying
+        if self.path.startswith("/api/"):
+            # Фейковый успешный ответ для внутренней формы Eventrix, чтобы она показала экран "Спасибо",
+            # а не ругалась на неопубликованный черновик.
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"success": True, "status": "ok", "message": "success"}).encode())
+            return
+            
         url = f"https://eventrix.pro{self.path}"
         req = urllib.request.Request(url, data=post_data, headers={'User-Agent': 'Mozilla/5.0'})
         if 'Content-Type' in self.headers:
@@ -101,7 +110,9 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(response.read())
         except Exception as e:
             self.send_response(200)
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
+            self.wfile.write(json.dumps({"success": True}).encode())
 
     def do_GET(self):
         if self.path == '/' or (not '.' in self.path.split('/')[-1] and not self.path.startswith('/api/')):
