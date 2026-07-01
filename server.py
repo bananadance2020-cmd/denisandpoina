@@ -84,8 +84,48 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             
         # For Eventrix proxying
         if self.path.startswith("/api/"):
-            # Фейковый успешный ответ для внутренней формы Eventrix, чтобы она показала экран "Спасибо",
-            # а не ругалась на неопубликованный черновик.
+            print("RECEIVED NATIVE API POST REQUEST:", self.path)
+            print("DATA:", post_data.decode('utf-8'))
+            
+            # Попытаемся отправить эти данные в VK, если это сабмит формы
+            if "submit" in self.path or "form" in self.path:
+                try:
+                    form_data = json.loads(post_data.decode('utf-8'))
+                    user_id = os.environ.get("VK_CLIENT_ID", "156300398") # ID клиента по умолчанию
+                    
+                    if not user_id and os.path.exists("vk_config.json"):
+                        try:
+                            with open("vk_config.json", "r") as f:
+                                conf = json.load(f)
+                                if conf.get("user_id"):
+                                    user_id = conf.get("user_id")
+                        except:
+                            pass
+                            
+                    if user_id:
+                        message = "🔔 Новая анкета от гостя (Native)!\n\n"
+                        # Eventrix usually sends {"fields": {...}} or similar
+                        if "fields" in form_data:
+                            for key, val in form_data["fields"].items():
+                                if val: message += f"• {key}: {val}\n"
+                        else:
+                            for key, val in form_data.items():
+                                if val: message += f"• {key}: {val}\n"
+                                
+                        vk_url = "https://api.vk.com/method/messages.send"
+                        params = urllib.parse.urlencode({
+                            'message': message,
+                            'peer_id': user_id,
+                            'access_token': VK_TOKEN,
+                            'v': '5.131',
+                            'random_id': 0
+                        })
+                        req = urllib.request.Request(f"{vk_url}?{params}")
+                        urllib.request.urlopen(req)
+                except Exception as e:
+                    print("Error forwarding native form to VK:", e)
+            
+            # Фейковый успешный ответ для внутренней формы Eventrix
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()

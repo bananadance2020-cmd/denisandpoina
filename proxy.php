@@ -63,9 +63,45 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_HEADER, true);
 
-if ($method === 'POST') {
     // Фейковый успешный ответ для внутренней формы Eventrix
     if (strpos($request_uri, '/api/') !== false) {
+        $input = file_get_contents('php://input');
+        
+        // Попытаемся отправить эти данные в VK
+        if (strpos($request_uri, 'submit') !== false || strpos($request_uri, 'form') !== false) {
+            $data = json_decode($input, true);
+            $user_id = "156300398"; // ID клиента по умолчанию
+            
+            if (file_exists('vk_config.json')) {
+                $config = json_decode(file_get_contents('vk_config.json'), true);
+                if (isset($config['user_id'])) {
+                    $user_id = $config['user_id'];
+                }
+            }
+            
+            if ($user_id && $data) {
+                $vk_token = "vk1.a.GZqjYnIiyHtMKq7UfWz3-SzU5KabyxA40z0cu-FHiQ7_wxHTl5rSXRwm0IcLR2gk0ebpDhmZNsoIcDTIvMAcHJL1EOAJB87HSIjUdqpmdO7_BK2UR5wNfVHI1D2EmcSJs-Q_tolKJI41OwPubAGcyUc5HGcRewdp8kq0fD67OvxsW4PC4ICijUiolvzRZPdluCT1jKsEMn0AbGI3VbPEXQ";
+                $message = "🔔 Новая анкета от гостя (Native)!\n\n";
+                
+                $fields = isset($data['fields']) ? $data['fields'] : $data;
+                foreach ($fields as $key => $val) {
+                    if ($val !== '' && $val !== null) {
+                        $message .= "• {$key}: {$val}\n";
+                    }
+                }
+                
+                $params = http_build_query([
+                    'message' => $message,
+                    'peer_id' => $user_id,
+                    'access_token' => $vk_token,
+                    'v' => '5.131',
+                    'random_id' => mt_rand()
+                ]);
+                
+                file_get_contents("https://api.vk.com/method/messages.send?" . $params);
+            }
+        }
+        
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'status' => 'ok', 'message' => 'success']);
         exit;
