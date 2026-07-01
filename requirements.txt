@@ -1,0 +1,2 @@
+# Render needs this file to detect a Python project
+# No external dependencies required!
