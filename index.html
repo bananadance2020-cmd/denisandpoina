@@ -1727,6 +1727,36 @@ setInterval(() => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(finalData)
             });
+            
+            // Clear the form after a short delay so Eventrix's native logic has time to grab data
+            setTimeout(() => {
+                for (let i of inputs) {
+                    if (i.type === 'radio' || i.type === 'checkbox') {
+                        if (i.checked) {
+                            i.checked = false;
+                            i.dispatchEvent(new Event('change', { bubbles: true }));
+                            i.removeAttribute('data-checked');
+                            if (i.parentElement) i.parentElement.removeAttribute('data-checked');
+                            if (i.nextElementSibling) i.nextElementSibling.removeAttribute('data-checked');
+                        }
+                    } else if (i.type !== 'hidden' && i.type !== 'button' && i.type !== 'submit') {
+                        i.value = '';
+                        i.dispatchEvent(new Event('input', { bubbles: true }));
+                        i.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }
+                
+                // Visual feedback on the button
+                let oldText = submitBtn.textContent;
+                let oldBg = submitBtn.style.backgroundColor;
+                submitBtn.textContent = "ОТПРАВЛЕНО ✓";
+                submitBtn.style.setProperty('background-color', '#4CAF50', 'important');
+                
+                setTimeout(() => {
+                    submitBtn.textContent = oldText;
+                    submitBtn.style.backgroundColor = oldBg;
+                }, 3000);
+            }, 500);
         });
     }
     
