@@ -188,22 +188,48 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
                                 d_idx = next((i for i, b in enumerate(blocks) if b.get("id") == "DressCode"), -1)
                                 if d_idx != -1:
                                     blocks.insert(d_idx + 1, w_block)
+                            
+                            for block in blocks:
+                                if block.get("id") == "Place":
+                                    if "address" in block.get("blocks", {}):
+                                        block["blocks"]["address"]["data"] = "ул. Карла Маркса, 23, Киров, Кировская обл.,"
+                                elif block.get("id") == "Map":
+                                    if "map" in block.get("blocks", {}) and "data" in block["blocks"]["map"] and "d" in block["blocks"]["map"]["data"]:
+                                        block["blocks"]["map"]["data"]["d"]["address"] = "ул. Карла Маркса, 23, Киров, Кировская обл.,"
+                                        block["blocks"]["map"]["data"]["d"]["coords"] = "58.6137, 49.6662"
+                                elif block.get("id") == "Program":
+                                    if "PR" in block.get("blocks", {}) and "data" in block["blocks"]["PR"] and "items" in block["blocks"]["PR"]["data"]:
+                                        for item in block["blocks"]["PR"]["data"]["items"]:
+                                            if item.get("time") == "16:00" and "Фуршет" in item.get("title", ""):
+                                                item["desc"] = "Октябрьский пр., 49"
                     
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
                     self.wfile.write(json.dumps(data).encode())
                 else:
+                    body = response.read()
+                    if self.path.endswith(".css"):
+                        try:
+                            css_text = body.decode('utf-8')
+                            css_text = css_text.replace("font-display:swap", "font-display:block").replace("font-display: swap", "font-display: block")
+                            body = css_text.encode('utf-8')
+                        except:
+                            pass
+                    
                     self.send_response(200)
                     if content_type:
                         self.send_header('Content-type', content_type)
                     self.end_headers()
-                    self.wfile.write(response.read())
+                    self.wfile.write(body)
         except Exception as e:
             self.send_response(500)
             self.end_headers()
             self.wfile.write(str(e).encode())
 
-with socketserver.TCPServer(("", PORT), ProxyHandler) as httpd:
-    print(f"Serving at port {PORT}")
+class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    pass
+
+with ThreadedTCPServer(("", PORT), ProxyHandler) as httpd:
+    print(f"Serving at port {PORT} with threads")
     httpd.serve_forever()
