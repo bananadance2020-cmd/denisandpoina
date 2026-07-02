@@ -204,6 +204,12 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
                                         for item in block["blocks"]["PR"]["data"]["items"]:
                                             if item.get("time") == "16:00" and "Фуршет" in item.get("title", ""):
                                                 item["desc"] = "Октябрьский пр., 49"
+                                elif block.get("id") == "Contacts":
+                                    if "cts" in block.get("blocks", {}) and "data" in block["blocks"]["cts"] and "cts" in block["blocks"]["cts"]["data"]:
+                                        for ct in block["blocks"]["cts"]["data"]["cts"]:
+                                            for link in ct.get("links", []):
+                                                if link.get("d") == "+7 (912) 333-19-46":
+                                                    link["d"] = "+7 (912) 331-94-61"
                     
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
