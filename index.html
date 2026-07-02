@@ -1516,12 +1516,21 @@ setInterval(() => {
       if (txt === "ОТПРАВИТЬ") {
          quizNode = el;
       }
-      if (txt.includes("МЫ С РАДОСТЬЮ ПРИГЛАШАЕМ ВАС СТАТЬ ЧАСТЬЮ НОВОГО ВОСПОМИНАНИЯ") && el.children.length <= 5) {
-         if (window.innerWidth <= 768) {
-             el.style.setProperty('color', '#0c2610', 'important');
-             el.style.position = 'relative';
-             el.style.zIndex = '10';
-         }
+      
+      // Fix specific text color without affecting container
+      if (window.innerWidth <= 768) {
+          for (let child of el.childNodes) {
+              if (child.nodeType === 3 && child.textContent.toUpperCase().includes("МЫ С РАДОСТЬЮ ПРИГЛАШАЕМ ВАС СТАТЬ ЧАСТЬЮ НОВОГО ВОСПОМИНАНИЯ")) {
+                  if (el.tagName !== 'SPAN' || el.style.color !== 'rgb(12, 38, 16)') {
+                      let span = document.createElement('span');
+                      span.style.color = '#0c2610';
+                      span.style.position = 'relative';
+                      span.style.zIndex = '10';
+                      el.insertBefore(span, child);
+                      span.appendChild(child);
+                  }
+              }
+          }
       }
     }
     
