@@ -1797,9 +1797,12 @@ setInterval(() => {
             if (text.includes("14:00") || text.includes("ТОРЖЕСТВЕННАЯ РЕГИСТРАЦИЯ")) {
                 p.style.setProperty('color', '#ffffff', 'important');
                 p.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
-            } else if (text.includes("ОКТЯБРЬСКИЙ ПР., 49") || text.includes("НА ВСЯКИЙ СЛУЧАЙ ПРИГОТОВЬТЕ ПЛАТОЧКИ")) {
+            } else if (text.includes("ОКТЯБРЬСКИЙ ПР., 49")) {
                 p.style.setProperty('color', 'rgba(255, 255, 255, 0.8)', 'important');
                 p.style.setProperty('-webkit-text-fill-color', 'rgba(255, 255, 255, 0.8)', 'important');
+            } else if (text.includes("НА ВСЯКИЙ СЛУЧАЙ ПРИГОТОВЬТЕ ПЛАТОЧКИ")) {
+                p.style.setProperty('color', 'rgba(255, 255, 255, 0.7)', 'important');
+                p.style.setProperty('-webkit-text-fill-color', 'rgba(255, 255, 255, 0.7)', 'important');
             } else {
                 // Remove the forced white if it was set previously so it falls back to original
                 p.style.removeProperty('color');
