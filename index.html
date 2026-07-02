@@ -1768,6 +1768,21 @@ setInterval(() => {
             }
         }
         
+        // Always inject address under ФУРШЕТ regardless of color section
+        if (text.trim() === "ФУРШЕТ") {
+            if (!p.hasAttribute('data-address-added')) {
+                p.setAttribute('data-address-added', 'true');
+                let addr = document.createElement('div');
+                addr.textContent = "Октябрьский пр., 49";
+                addr.style.setProperty('color', 'rgba(255, 255, 255, 0.8)', 'important');
+                addr.style.setProperty('font-size', '16px', 'important');
+                addr.style.setProperty('margin-top', '8px', 'important');
+                addr.style.setProperty('text-align', 'center', 'important');
+                addr.style.setProperty('font-family', 'inherit', 'important');
+                p.parentNode.insertBefore(addr, p.nextSibling);
+            }
+        }
+        
         if (inProgramSection) {
             p.classList.remove('green-text-override');
             
@@ -1804,18 +1819,6 @@ setInterval(() => {
             text.includes("14:00") || text.includes("КАРЛА МАРКСА") || text.includes("25 НОЯБРЯ 2026") ||
             text.includes("БУДЕМ РАДЫ") || text.includes("НА НАШЕМ ПРАЗДНИКЕ") || text.includes("НАШЕМ ПРАЗДНИКЕ")) {
             p.style.setProperty('color', '#0c2610', 'important');
-        } else if (text.trim() === "ФУРШЕТ") {
-            if (!p.hasAttribute('data-address-added')) {
-                p.setAttribute('data-address-added', 'true');
-                let addr = document.createElement('div');
-                addr.textContent = "Октябрьский пр., 49";
-                addr.style.setProperty('color', 'rgba(255, 255, 255, 0.8)', 'important');
-                addr.style.setProperty('font-size', '16px', 'important');
-                addr.style.setProperty('margin-top', '8px', 'important');
-                addr.style.setProperty('text-align', 'center', 'important');
-                addr.style.setProperty('font-family', 'inherit', 'important');
-                p.parentNode.insertBefore(addr, p.nextSibling);
-            }
         }
     }
     
