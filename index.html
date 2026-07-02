@@ -1517,13 +1517,15 @@ setInterval(() => {
          quizNode = el;
       }
       
-      // Fix specific text color without affecting container
+      // Fix mobile text visibility (avoiding React innerHTML crash)
       if (window.innerWidth <= 768) {
-          if (el.innerHTML && el.innerHTML.includes('Мы с радостью приглашаем вас') && !el.innerHTML.includes('color: #0c2610')) {
-              el.innerHTML = el.innerHTML.replace(
-                  'Мы с радостью приглашаем вас стать частью нового воспоминания – нашей свадьбы.', 
-                  '<span style="color: #0c2610 !important; position: relative; z-index: 10;">Мы с радостью приглашаем вас стать частью нового воспоминания – нашей свадьбы.</span>'
-              );
+          let textMatch = el.textContent || "";
+          if (textMatch.includes("Мы с радостью приглашаем вас") && 
+              !textMatch.includes("Свадебное приглашение") && 
+              !textMatch.includes("СВАДЕБНОЕ ПРИГЛАШЕНИЕ")) {
+              el.style.color = '#0c2610';
+              el.style.position = 'relative';
+              el.style.zIndex = '10';
           }
       }
     }
