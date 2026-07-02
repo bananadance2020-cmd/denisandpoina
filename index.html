@@ -1519,17 +1519,11 @@ setInterval(() => {
       
       // Fix specific text color without affecting container
       if (window.innerWidth <= 768) {
-          for (let child of el.childNodes) {
-              if (child.nodeType === 3 && child.textContent.toUpperCase().includes("МЫ С РАДОСТЬЮ ПРИГЛАШАЕМ ВАС СТАТЬ ЧАСТЬЮ НОВОГО ВОСПОМИНАНИЯ")) {
-                  if (el.tagName !== 'SPAN' || el.style.color !== 'rgb(12, 38, 16)') {
-                      let span = document.createElement('span');
-                      span.style.color = '#0c2610';
-                      span.style.position = 'relative';
-                      span.style.zIndex = '10';
-                      el.insertBefore(span, child);
-                      span.appendChild(child);
-                  }
-              }
+          if (el.innerHTML && el.innerHTML.includes('Мы с радостью приглашаем вас') && !el.innerHTML.includes('color: #0c2610')) {
+              el.innerHTML = el.innerHTML.replace(
+                  'Мы с радостью приглашаем вас стать частью нового воспоминания – нашей свадьбы.', 
+                  '<span style="color: #0c2610 !important; position: relative; z-index: 10;">Мы с радостью приглашаем вас стать частью нового воспоминания – нашей свадьбы.</span>'
+              );
           }
       }
     }
