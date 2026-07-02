@@ -1770,16 +1770,25 @@ setInterval(() => {
         
         if (inProgramSection) {
             p.classList.remove('green-text-override');
-            p.style.setProperty('color', '#ffffff', 'important');
-            p.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
             
             // Remove from parents as well just in case
             let curr = p;
             while(curr && curr !== parentSection) {
                 curr.classList.remove('green-text-override');
-                curr.style.setProperty('color', '#ffffff', 'important');
-                curr.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
                 curr = curr.parentElement;
+            }
+            
+            // Only make 14:00 and Торжественная регистрация white
+            if (text.includes("14:00") || text.includes("ТОРЖЕСТВЕННАЯ РЕГИСТРАЦИЯ")) {
+                p.style.setProperty('color', '#ffffff', 'important');
+                p.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
+            } else if (text.includes("ОКТЯБРЬСКИЙ ПР., 49")) {
+                p.style.setProperty('color', 'rgba(255, 255, 255, 0.8)', 'important');
+                p.style.setProperty('-webkit-text-fill-color', 'rgba(255, 255, 255, 0.8)', 'important');
+            } else {
+                // Remove the forced white if it was set previously so it falls back to original
+                p.style.removeProperty('color');
+                p.style.removeProperty('-webkit-text-fill-color');
             }
         } else if (text.includes("25.11.2026")) {
             if (namesColor) {
