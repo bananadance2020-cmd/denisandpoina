@@ -193,6 +193,8 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
                                 if block.get("id") == "Place":
                                     if "address" in block.get("blocks", {}):
                                         block["blocks"]["address"]["data"] = "ул. Карла Маркса, 23, Киров, Кировская обл.,"
+                                    if "time" in block.get("blocks", {}):
+                                        block["blocks"]["time"]["data"] = "14:00"
                                 elif block.get("id") == "Map":
                                     if "map" in block.get("blocks", {}) and "data" in block["blocks"]["map"] and "d" in block["blocks"]["map"]["data"]:
                                         block["blocks"]["map"]["data"]["d"]["address"] = "ул. Карла Маркса, 23, Киров, Кировская обл.,"
@@ -228,7 +230,7 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(str(e).encode())
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
-    pass
+    allow_reuse_address = True
 
 with ThreadedTCPServer(("", PORT), ProxyHandler) as httpd:
     print(f"Serving at port {PORT} with threads")
