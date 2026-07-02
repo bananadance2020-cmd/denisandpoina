@@ -129,7 +129,7 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({"success": True, "status": "ok", "message": "success"}).encode())
+            self.wfile.write(json.dumps({"error": False, "data": True}).encode())
             return
             
         url = f"https://eventrix.pro{self.path}"
