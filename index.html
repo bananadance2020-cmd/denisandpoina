@@ -1759,7 +1759,29 @@ setInterval(() => {
         
         let text = node.nodeValue.toUpperCase();
         
-        if (text.includes("25.11.2026")) {
+        let inProgramSection = false;
+        let parentSection = p.closest('section') || p.closest('main > div');
+        if (parentSection) {
+            let pText = parentSection.textContent.toUpperCase();
+            if (pText.includes("НАШ ДЕНЬ") || pText.includes("КАК ПРОЙДЁТ") || pText.includes("ЦЕРЕМОНИЯ") || pText.includes("БАНКЕТ") || pText.includes("ПЛАТОЧКИ")) {
+                inProgramSection = true;
+            }
+        }
+        
+        if (inProgramSection) {
+            p.classList.remove('green-text-override');
+            p.style.setProperty('color', '#ffffff', 'important');
+            p.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
+            
+            // Remove from parents as well just in case
+            let curr = p;
+            while(curr && curr !== parentSection) {
+                curr.classList.remove('green-text-override');
+                curr.style.setProperty('color', '#ffffff', 'important');
+                curr.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
+                curr = curr.parentElement;
+            }
+        } else if (text.includes("25.11.2026")) {
             if (namesColor) {
                 p.style.setProperty('color', namesColor, 'important');
             }
